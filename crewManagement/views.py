@@ -25,6 +25,26 @@ def getCrew(request):
     else:
         return JsonResponse({"error": "Method not allowed"}, status=405)
 
+def getCrewById(request, crew_id):
+    if request.method == 'GET':
+        try:
+            if crew_id:
+                crew = Crew.objects.get(id=crew_id)
+                if crew is None:
+                    return JsonResponse({"error": "Crew not found"}, status=404)
+                data = {
+                    "id": crew.id,
+                    "user": crew.user.name if crew.user else None,
+                    "position": crew.position,
+                    "project": [project.name for project in crew.projects.all()]
+                }
+                return JsonResponse(data, safe=False)
+            else:
+                return JsonResponse({"error": "Crew ID is required"}, status=400)
+            
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
 def getCast(request):
     if request.method == 'GET':
         try:
@@ -42,6 +62,25 @@ def getCast(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Method not allowed"}, status=405)
+
+def getCastById(request, cast_id):
+    if request.method == 'GET':
+        try:
+            if cast_id:
+                cast = Cast.objects.get(id=cast_id)
+                if cast is None:
+                    return JsonResponse({"error": "Cast not found"}, status=404)
+                data = {
+                    "id": cast.id,
+                    "user": cast.user.name if cast.user else None,
+                    "role": cast.role,
+                    "project": [project.name for project in cast.projects.all()]
+                }
+                return JsonResponse(data, safe=False)
+            else:
+                return JsonResponse({"error": "Cast ID is required"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
 def assignPost(request):
     if request.method == 'POST':
